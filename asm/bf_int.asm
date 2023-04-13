@@ -1,8 +1,7 @@
 ;-----------------------------------------------------------------------------------------
 ;Interpreter for the esoteric programming language brainfuck
 ;
-;In this implementation each cell will have 4 bytes (quadword) assigned to it, as to allow
-;bigger values
+;In this implementation each cell will have one byte assigned to it
 ;-----------------------------------------------------------------------------------------
 
 INPUT_SIZE: equ 10000       ;maximum size the input buffer should have
@@ -82,14 +81,14 @@ switch_char:
     ; + Increment the byte at the data pointer
     cmp dl, 0x2B
     jne case4
-    inc qword [cells +ebx]
+    inc byte [cells + ebx]
     jmp end
     
   case4:                
     ; - Decrement the byte at the data pointer
     cmp dl, 0x2D
     jne case5
-    dec qword [cells +ebx]
+    dec byte [cells + ebx]
     jmp end
     
   case5:                

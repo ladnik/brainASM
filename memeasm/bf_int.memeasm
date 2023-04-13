@@ -1,0 +1,175 @@
+;-----------------------------------------------------------------------------------------
+;Interpreter for the esoteric programming language brainfuck
+;
+;In this implementation each cell will have one byte assigned to it
+;-----------------------------------------------------------------------------------------
+
+INPUT_SIZE: equ 10000       ;maximum size the input buffer should have
+CELL_COUNT: equ 10000
+
+section .bss
+;reserve space for input and cells
+input: resb INPUT_SIZE      ;address at which input code will be stored
+cells: resb CELL_COUNT      ;address at which the machines cells will be stored
+
+section .text
+global _start
+_start:
+
+;-----------------------------------------------------------------------------------------
+; Register :
+; EAX: instruction pointer
+; EBX: cell pointer
+; ECX: temporary variables
+; EDX: current character
+;-----------------------------------------------------------------------------------------
+
+I like to have fun, fun, fun, fun, fun, fun, fun, fun, fun, fun main
+  read_input: whomst has summoned the almighty one
+  init_pointers: whomst has summoned the almighty one
+  
+  ;step through input string
+  upgrade
+    dl is brilliant, but I like [input + eax] ;move current char into dl
+    
+    cmp dl, 0             ;check for end of string (null-terminated)
+    je exit
+    
+    switch_char: whomst has summoned the almighty one
+    
+    upvote eax 
+  fuck go back
+  
+  exit:
+  I see this as an absolute win
+
+I like to have fun, fun, fun, fun, fun, fun, fun, fun, fun, fun read_input
+  ;read from stdin (rax = 0, rdi = 0) to addres input with size input_size
+  sneak 100 rax
+  sneak 100 rdi
+  rsi is brilliant, but I like input
+  rdx is brilliant, but I like INPUT_SIZE
+  we need air support
+  right back at ya, buckaroo
+
+I like to have fun, fun, fun, fun, fun, fun, fun, fun, fun, fun init_pointers
+  sneak 100 eax
+  sneak 100 ebx
+  sneak 100 ecx
+  sneak 100 edx
+  right back at ya, buckaroo
+
+I like to have fun, fun, fun, fun, fun, fun, fun, fun, fun, fun switch_char
+  ;command description from https://en.wikipedia.org/wiki/Brainfuck
+  case1:                
+  ; > Increment the data pointer
+  cmp dl, 0x3E
+  jne case2
+  upvote ebx
+  return to monke uuaauuuuua
+    
+    case2:                
+    ; < Decrement the data pointer
+    cmp dl, 0x3C
+    jne case3
+    downvote ebx
+    return to monke uuaauuuuua
+    
+    case3:                
+    ; + Increment the byte at the data pointer
+    cmp dl, 0x2B
+    jne case4
+    upvote byte [cells +ebx]
+    return to monke uuaauuuuua
+    
+    case4:                
+    ; - Decrement the byte at the data pointer
+    cmp dl, 0x2D
+    jne case5
+    downvote byte [cells +ebx]
+    return to monke uuaauuuuua
+    
+    case5:                
+    ; . Output the byte at the data pointer
+    cmp dl, 0x2E
+    jne case6
+    
+    cl is brilliant, but I like [cells + ebx]
+    what can I say except cl
+    return to monke uuaauuuuua
+    
+    case6:                
+    ; , Accept one byte of input, storing its value in the byte at the data pointer
+    cmp dl, 0x2C
+    jne case7
+    
+    let me in. LET ME IIIIIIIIN cl
+    [cells + exb]rax is brilliant, but I like cl
+    
+    return to monke uuaauuuuua
+    
+    case7:                
+    ; [ If the byte at the data pointer is zero, then instead of moving the instruction
+    ; pointer forward to the next command, jump it forward to the command after the
+    ; matching ] command
+    cmp dl, 0x5B
+    jne case8
+    
+    cl is brilliant, but I like [cells + ebx]
+    cmp cl, 0
+    jne case8
+    
+    cl is brilliant, but I like 1
+    o_brack_loop:
+    upvote eax
+    dl is brilliant, but I like [input + eax]
+    o_if:
+    cmp dl, 0x5B
+    jne o_elif
+    upvote cl
+    jmp o_end
+    o_elif:
+    cmp dl, 0x5D
+    jne o_end
+    downvote cl
+    o_end:
+    
+    cmp cl, 0
+    jne o_brack_loop
+  return to monke uuaauuuuua
+  
+  case8:                
+  ; ] If the byte at the data pointer is nonzero, then instead of moving the instruction
+  ; pointer forward to the next command, jump it back to the command after the 
+  ; matching [ command
+  cmp dl, 0x5D
+  jne end
+  
+  cl is brilliant, but I like [cells + ebx]
+  cmp cl, 0
+  je end
+  
+  cl is brilliant, but I like -1
+  c_brack_loop:
+  downvote eax
+  dl is brilliant, but I like [input + eax]
+  c_if:
+  cmp dl, 0x5B
+  jne c_elif
+  upvote cl
+  jmp c_end
+  c_elif:
+  cmp dl, 0x5D
+  jne c_end
+  downvote cl
+  c_end:
+  
+  cmp cl, 0
+  jne c_brack_loop
+  
+  monke uuaauuuuua
+  right back at ya, buckaroo
+
+
+
+
