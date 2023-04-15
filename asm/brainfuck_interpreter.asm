@@ -1,7 +1,7 @@
 ;-----------------------------------------------------------------------------------------
-;Interpreter for the esoteric programming language brainfuck
+; Interpreter for the esoteric programming language brainfuck
 ;
-;In this implementation each cell will have one byte assigned to it
+; In this implementation each cell will have one byte assigned to it
 ;-----------------------------------------------------------------------------------------
 
 INPUT_SIZE: equ 10000       ;maximum size the input buffer should have
