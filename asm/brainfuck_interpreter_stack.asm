@@ -1,7 +1,7 @@
 ;-----------------------------------------------------------------------------------------
 ; Interpreter for the esoteric programming language brainfuck
 ;
-; In this implementation each cell will have four bytes assigned to it
+; In this implementation each cell will have eight bytes (64 bit) assigned to it.
 ; The code input and cells will be stored on the stack, as to avoid indirect addressing and
 ; memory. Therefore this code is an abomination, please don't look to closely at it.
 ;-----------------------------------------------------------------------------------------
@@ -35,6 +35,10 @@ _start:
 ; |---------------------|
 ; |                     | <- RSP
 ;  ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+; RAX stores the absolute address of the first char of the input-string.
+; RBX stores the cell offset relative to the first cell for which the address is stored in
+; R9. This offset is in QWORD scaling, meaning cell 1 has offset 0, cell 2 has offset 1,
+; cell 3 has offset 2 etc.
 ;-----------------------------------------------------------------------------------------
 
 

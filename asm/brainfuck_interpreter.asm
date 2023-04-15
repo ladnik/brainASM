@@ -17,11 +17,11 @@ global _start
 _start:
 
 ;-----------------------------------------------------------------------------------------
-; Register :
-; EAX: instruction pointer
-; EBX: cell pointer
-; ECX: temporary variables
-; EDX: current character
+; Registers:
+; RAX: instruction pointer
+; RBX: cell pointer
+; RCX: temporary variables
+; RDX: current character
 ;-----------------------------------------------------------------------------------------
 
 main:
@@ -30,14 +30,14 @@ main:
     
   ;step through input string
   loop_step:
-    mov dl, [input + eax] ;move current char into dl
+    mov dl, [input + rax] ;move current char into dl
 
     cmp dl, 0             ;check for end of string (null-terminated)
     je exit
     
     call switch_char      ;interprete character
     
-    inc eax
+    inc rax
     jmp loop_step
 
 exit:
@@ -55,10 +55,10 @@ read_input:
   ret
 
 init_pointers:
-  xor eax, eax
-  xor ebx, ebx
-  xor ecx, ecx
-  xor edx, edx
+  xor rax, rax
+  xor rbx, rbx
+  xor rcx, rcx
+  xor rdx, rdx
   ret
   
 switch_char:
@@ -67,28 +67,28 @@ switch_char:
     ; > Increment the data pointer
     cmp dl, 0x3E
     jne case2
-    inc ebx
+    inc rbx
     jmp end
   
   case2:                
     ; < Decrement the data pointer
     cmp dl, 0x3C
     jne case3
-    dec ebx
+    dec rbx
     jmp end
   
   case3:                
     ; + Increment the byte at the data pointer
     cmp dl, 0x2B
     jne case4
-    inc byte [cells + ebx]
+    inc byte [cells + rbx]
     jmp end
     
   case4:                
     ; - Decrement the byte at the data pointer
     cmp dl, 0x2D
     jne case5
-    dec byte [cells + ebx]
+    dec byte [cells + rbx]
     jmp end
     
   case5:                
@@ -99,7 +99,7 @@ switch_char:
     push rax
     mov rax, 1
     mov rdi, 1
-    lea rsi, [cells + ebx]
+    lea rsi, [cells + rbx]
     mov rdx, 1
     syscall
     pop rax
@@ -113,7 +113,7 @@ switch_char:
     push rax
     xor rax, rax
     xor rdi, rdi
-    lea rsi, [cells + ebx]
+    lea rsi, [cells + rbx]
     mov rdx, 1
     syscall
     pop rax
@@ -126,14 +126,14 @@ switch_char:
     cmp dl, 0x5B
     jne case8
     
-    mov cl, [cells + ebx]
+    mov cl, [cells + rbx]
     cmp cl, 0
     jne case8
     
     mov cl, 1
     o_brack_loop:
-      inc eax
-      mov dl, [input + eax]
+      inc rax
+      mov dl, [input + rax]
       o_if:
         cmp dl, 0x5B
         jne o_elif
@@ -156,14 +156,14 @@ switch_char:
     cmp dl, 0x5D
     jne end
     
-    mov cl, [cells + ebx]
+    mov cl, [cells + rbx]
     cmp cl, 0
     je end
     
     mov cl, -1
     c_brack_loop:
-      dec eax
-      mov dl, [input + eax]
+      dec rax
+      mov dl, [input + rax]
       c_if:
         cmp dl, 0x5B
         jne c_elif
