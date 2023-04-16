@@ -224,7 +224,6 @@ case7:
   mov r11, rbx
   shl r11, 3
   sub rcx, r11        ; calculate data address
-  ;mov rcx, [rcx]
   
   mov r10, rsp
   mov rsp, rcx

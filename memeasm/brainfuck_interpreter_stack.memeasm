@@ -1,0 +1,515 @@
+What the hell happened here? ;-----------------------------------------------------------------------------------------
+What the hell happened here? ; Interpreter for the esoteric programming language brainfuck, but now in MemeASM. YEAH!
+What the hell happened here? ;-----------------------------------------------------------------------------------------
+What the hell happened here? ; In this implementation each cell will have eight bytes (64 bit) assigned to it.
+What the hell happened here? ; The code input and cells will be stored on the stack, as to avoid indirect addressing and
+What the hell happened here? ; memory as this isn't provided in MemeASM at this point in time. Other fun limitations
+What the hell happened here? ; include the fact that comparison labels can be only used once globally.
+What the hell happened here? ;
+What the hell happened here? ; Therefore this code is an abomination, please don't look to closely at it. It is very
+What the hell happened here? ; shy and may run away or segfault into oblivion. But Hello World should run.
+What the hell happened here? ;-----------------------------------------------------------------------------------------
+
+
+
+What the hell happened here? ;-----------------------------------------------------------------------------------------
+What the hell happened here? ; Registers:
+What the hell happened here? ; RAX: instruction pointer  (absolute, BYTE increment scaling)
+What the hell happened here? ; RBX: data pointer         (relative to R9, QWORD increment scaling)    
+What the hell happened here? ; RCX: temporary variables
+What the hell happened here? ; RDX: current character
+What the hell happened here? ; R8:  input address
+What the hell happened here? ; R9:  data address
+What the hell happened here? ; R10: temporary variables  (mainly for saving RSP)
+What the hell happened here? ; R11: temporary variables
+What the hell happened here? ;-----------------------------------------------------------------------------------------
+What the hell happened here? 
+What the hell happened here? ;-----------------------------------------------------------------------------------------
+What the hell happened here? ; Stack layout:
+What the hell happened here? ;  _____________________
+What the hell happened here? ; |      R8 (input)     |
+What the hell happened here? ; |         ...         | <- RAX (absolute, BYTE scaling)
+What the hell happened here? ; |     max ?k chars   |
+What the hell happened here? ; |---------------------|
+What the hell happened here? ; |       R9 (data)     |
+What the hell happened here? ; |         ...         | <- RBX  (relative, QWORD scaling)
+What the hell happened here? ; |---------------------|
+What the hell happened here? ; |                     | <- RSP
+What the hell happened here? ;  ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+What the hell happened here? ; RAX stores the absolute address of the first char of the input-string.
+What the hell happened here? ; RBX stores the cell offset relative to the first cell for which the address is stored in
+What the hell happened here? ; R9. This offset is in QWORD scaling, meaning cell 1 has offset 0, cell 2 has offset 1,
+What the hell happened here? ; cell 3 has offset 2 etc.
+What the hell happened here? ;-----------------------------------------------------------------------------------------
+
+
+What the hell happened here? As a note to myself, as I wasted countless hours on fixing this: print_char uses the stack,
+What the hell happened here? so pop the correct stack pointer before executing the call
+
+I like to have fun, fun, fun, fun, fun, fun, fun, fun, fun, fun main
+  What the hell happened here? initialize registers
+  sneak 100 rax
+  sneak 100 rbx
+  sneak 100 rcx
+  sneak 100 rdx
+  sneak 100 r8
+  sneak 100 r9
+  sneak 100 r10
+  sneak 100 r11
+  
+  r8 is brilliant, but I like rsp         
+  parry 8 you filthy casual r8
+  
+  What the hell happened here? read code input from stdin
+  upgrade       
+    sneak 100 rcx
+    let me in. LET ME IIIIIIIIN cl
+    
+    corporate needs you to find the difference between cl and \n  
+    stonks rcx        
+    
+  fuck go back
+  
+  they're the same picture
+  
+  sneak 100 rcx
+  What the hell happened here? end of reading - now the input string should be saved on the stack
+  
+  What the hell happened here? set data address
+  r9 is brilliant, but I like rsp         
+  parry 8 you filthy casual r9
+  What the hell happened here? reserve 1 cell with value 0.
+  stonks rcx
+  
+  
+  What the hell happened here? step through input string
+  rax is brilliant, but I like r8
+  banana
+    What the hell happened here? save current rsp for later
+    r10 is brilliant, but I like rsp        
+    rsp is brilliant, but I like rax
+    What the hell happened here? move current char into dl
+    not stonks rdx             
+    rsp is brilliant, but I like r10
+    
+    What the hell happened here? check for end of string (beginning of data)
+    who would win? rax or r9
+    r9 wins                                
+    return to monke uauauauauuuaua
+    rax wins
+    return to monke aaaauuuua
+    
+    monke aaaauuuua
+    What the hell happened here? ;-----------------------------------------------------------------------------------------
+    What the hell happened here? interprete character 
+    
+    What the hell happened here? command description from https://en.wikipedia.org/wiki/Brainfuck              
+    What the hell happened here? > increment the data pointer
+    who would win? dl or 62
+    return to monke auauauauuuua
+    dl wins 
+    62 wins
+    return to monke uauauauuauauauaua
+    
+    monke auauauauuuua
+    upvote rbx
+    What the hell happened here? make space for the next cell
+    sneak 100 rcx
+    stonks rcx
+    
+    
+    return to monke aaaaaaaaaaaaaauuuu
+      
+      monke uauauauuauauauaua                
+      What the hell happened here? < decrement the data pointer
+      
+      who would win? edx or 60
+      return to monke auuuuuuuuuuuuuuuuuuuuuaua
+      edx wins 
+      60 wins
+      return to monke auuuuaaauua
+      
+      monke auuuuuuuuuuuuuuuuuuuuuaua
+      downvote rbx
+      return to monke aaaaaaaaaaaaaauuuu
+      
+      monke auuuuaaauua                
+      What the hell happened here? + increment the byte at the data pointer
+      who would win? rdx or 43
+      return to monke uuuuuuuuuua
+      rdx wins 
+      43 wins
+      return to monke aaaauaaaa
+      
+      monke uuuuuuuuuua
+      r10 is brilliant, but I like rsp
+      rsp is brilliant, but I like r9
+      rcx is brilliant, but I like rbx
+      upgrades, people. Upgrades rcx
+      upgrades, people. Upgrades rcx
+      upgrades, people. Upgrades rcx
+      
+      What the hell happened here? calculate data address
+      parry rcx you filthy casual rsp       
+      
+      What the hell happened here? get cells contents
+      not stonks rcx             
+      upvote rcx
+      stonks rcx
+      rsp is brilliant, but I like r10
+      return to monke aaaaaaaaaaaaaauuuu
+      
+      monke aaaauaaaa               
+      What the hell happened here? - decrement the byte at the data pointer 
+      stonks rcx
+      rcx is brilliant, but I like rdx
+      who would win? cl or 45
+      not stonks rcx
+      return to monke uuuuuuuuuuuuuuuuuaaaa
+      cl wins 
+      45 wins
+      not stonks rcx
+      return to monke auuauauuuaaaaauuu
+      
+      monke uuuuuuuuuuuuuuuuuaaaa
+      r10 is brilliant, but I like rsp
+      rsp is brilliant, but I like r9
+      rcx is brilliant, but I like rbx
+      upgrades, people. Upgrades rcx
+      upgrades, people. Upgrades rcx
+      upgrades, people. Upgrades rcx
+      
+      What the hell happened here? calculate data address
+      parry rcx you filthy casual rsp     
+      
+      What the hell happened here? get cells contents
+      not stonks rcx             
+      downvote rcx
+      stonks rcx
+      rsp is brilliant, but I like r10
+      
+      return to monke aaaaaaaaaaaaaauuuu
+      
+      monke auuauauuuaaaaauuu
+      What the hell happened here? . Output the byte at the data pointer
+      stonks rcx
+      rcx is brilliant, but I like rdx
+      who would win? ecx or 46
+      not stonks rcx
+      return to monke aauuuaauuauuaaaaaaaaaa
+      ecx wins 
+      46 wins
+      not stonks rcx
+      return to monke uuuuuaaaauuuauaua
+      
+      monke aauuuaauuauuaaaaaaaaaa        
+      r10 is brilliant, but I like rsp
+      rsp is brilliant, but I like r9
+      rcx is brilliant, but I like rbx
+      upgrades, people. Upgrades rcx
+      upgrades, people. Upgrades rcx
+      upgrades, people. Upgrades rcx
+      What the hell happened here? calculate data address
+      parry rcx you filthy casual rsp    
+      
+      What the hell happened here? get cells contents
+      not stonks rcx
+      rsp is brilliant, but I like r10      
+      what can I say except cl      
+      
+      return to monke aaaaaaaaaaaaaauuuu
+      
+      monke uuuuuaaaauuuauaua
+      What the hell happened here? , Accept one byte of input, storing its value in the byte at the data pointer
+      
+      stonks rax
+      rax is brilliant, but I like rdx
+      who would win? al or 44
+      not stonks rax
+      return to monke aaaaauuuuuauauauauuauaua
+      al wins 
+      44 wins
+      not stonks rax
+      return to monke uuuuuuuuuaaauauaua
+      
+      monke aaaaauuuuuauauauauuauaua
+      
+      
+      r10 is brilliant, but I like rsp    
+      rsp is brilliant, but I like r9
+      rcx is brilliant, but I like rbx
+      
+      upgrades, people. Upgrades rcx
+      upgrades, people. Upgrades rcx
+      upgrades, people. Upgrades rcx
+      What the hell happened here? calculate data address
+      parry rcx you filthy casual rsp        
+      
+      sneak 100 rdx
+      let me in. LET ME IIIIIIIIN dl
+      stonks rdx
+      
+      rsp is brilliant, but I like r10
+      
+      return to monke aaaaaaaaaaaaaauuuu
+      
+      monke uuuuuuuuuaaauauaua               
+      What the hell happened here? [ If the byte at the data pointer is zero, then instead of moving the instruction
+      What the hell happened here? pointer forward to the next command, jump it forward to the command after the
+      What the hell happened here? matching ] command
+      
+      stonks rax
+      rax is brilliant, but I like rdx
+      who would win? eax or 91
+      not stonks rax
+      return to monke aaaaauuuauauauauauaaaaaaaaaaaaaaaaa
+      eax wins 
+      91 wins
+      not stonks rax
+      return to monke uuuauauauuuuuuuuuuuuuuuuuuuu
+      
+      monke aaaaauuuauauauauauaaaaaaaaaaaaaaaaa
+      
+      rcx is brilliant, but I like r9
+      r11 is brilliant, but I like rbx
+      upgrades, people. Upgrades r11
+      upgrades, people. Upgrades r11
+      upgrades, people. Upgrades r11
+      What the hell happened here? calculate data address
+      parry r11 you filthy casual rcx        
+      
+      r10 is brilliant, but I like rsp
+      rsp is brilliant, but I like rcx
+      not stonks rcx
+      rsp is brilliant, but I like r10
+      
+      What the hell happened here? check if byte is zero
+      
+      who would win? rcx or 0
+      return to monke uuuaaauauaua
+      rcx wins 
+      0 wins
+      return to monke aaaaaaaaaaaaaauuuu
+      
+      monke uuuaaauauaua
+      
+      stonks rbx
+      stonks rdx
+      rcx is brilliant, but I like 1
+      
+      What the hell happened here? o_brack_loop:
+      monke auauauauaaaaaaa
+        What the hell happened here? step forward
+        parry 8 you filthy casual rax        
+        
+        r10 is brilliant, but I like rsp
+        rsp is brilliant, but I like rax
+        What the hell happened here? get input char
+        not stonks rdx           
+        rsp is brilliant, but I like r10
+        
+        monke aaauuuauauauauaua
+        What the hell happened here? o_if:
+        stonks r12
+        r12 is brilliant, but I like rdx
+        r12 units are ready, with 69 more well on the way
+        who would win? r12 or 160
+        not stonks r12
+        What the hell happened here? je A
+        return to monke uuuuaaauuuuauauaua
+        r12 wins 
+        160 wins
+        not stonks r12
+        What the hell happened here? jne o_elif
+        return to monke uuauauuauaaa
+        
+        What the hell happened here? A
+        monke uuuuaaauuuuauauaua
+        upvote rcx
+        What the hell happened here? jmp o_end
+        return to monke uuauuuauauua 
+          
+          What the hell happened here? o_elif:
+          monke uuauauuauaaa
+          stonks rbx
+          rbx is brilliant, but I like rdx     
+          who would win? bl or 93
+          not stonks rbx
+          What the hell happened here? je B
+          return to monke aaaaaaaaaaaaaaaaaaaaaaaaaaau
+          bl wins 
+          93 wins
+          not stonks rbx
+          What the hell happened here? jne o_end
+        return to monke uuauuuauauua
+        
+        What the hell happened here? B
+        monke aaaaaaaaaaaaaaaaaaaaaaaaaaau         
+        downvote rcx
+        
+        What the hell happened here? o_end:
+        monke uuauuuauauua  
+        What the hell happened here? break if the number of '[ is the same as for ']'
+        
+        stonks r11
+        r11 is brilliant, but I like rcx
+        r11 units are ready, with 42 more well on the way
+        who would win? r11 or 42
+        not stonks r11
+        What the hell happened here? je C
+        return to monke uuuuuuuuuuaa
+        r11 wins 
+        42 wins
+        not stonks r11
+        What the hell happened here? jne o_brack_loop
+      return to monke auauauauaaaaaaa
+      
+      What the hell happened here? C
+      monke uuuuuuuuuuaa
+      
+      not stonks rdx
+      not stonks rbx
+      What the hell happened here? jmp end
+      return to monke aaaaaaaaaaaaaauuuu
+      
+      monke uuuauauauuuuuuuuuuuuuuuuuuuu               
+      What the hell happened here? ] If the byte at the data pointer is nonzero, then instead of moving the instruction
+      What the hell happened here? pointer forward to the next command, jump it back to the command after the 
+      What the hell happened here? matching [ command
+      
+      stonks rsi
+      rsi is brilliant, but I like rdx 
+      rsi units are ready, with 3 more well on the way
+      who would win? si or 96
+      not stonks rsi
+      return to monke uaaauauauuuuu
+      si wins 
+      96 wins
+      not stonks rsi
+      What the hell happened here? jne end
+      return to monke aaaaaaaaaaaaaauuuu
+      
+      monke uaaauauauuuuu
+      rcx is brilliant, but I like r9
+      r11 is brilliant, but I like rbx
+      upgrades, people. Upgrades r11
+      upgrades, people. Upgrades r11
+      upgrades, people. Upgrades r11
+      What the hell happened here? calculate data address
+      parry r11 you filthy casual rcx        
+      
+      r10 is brilliant, but I like rsp
+      rsp is brilliant, but I like rcx
+      not stonks rcx
+      rsp is brilliant, but I like r10
+      
+      
+      What the hell happened here? check if byte is nonzero
+      stonks r8
+      r8 is brilliant, but I like rcx
+      r8 units are ready, with 12 more well on the way
+      who would win? r8 or 12  
+      not stonks r8
+      What the hell happened here? jne end
+    return to monke aaaaaaaaaaaaaauuuu
+    r8 wins 
+    12 wins
+    not stonks r8
+    
+    stonks rbx
+    stonks rdx  
+    rcx is brilliant, but I like -1
+    
+    What the hell happened here? c_brack_loop:
+    monke aaaaauuuuuu
+      What the hell happened here? step back
+      rax units are ready, with 8 more well on the way        
+      
+      r10 is brilliant, but I like rsp
+      rsp is brilliant, but I like rax
+      
+      not stonks rdx           
+      rsp is brilliant, but I like r10
+      
+      stonks rsi
+      rsi is brilliant, but I like rdx 
+      rsi units are ready, with 10 more well on the way
+      who would win? esi or 101
+      not stonks rsi
+      return to monke aaaaaauuu
+      What the hell happened here? je A
+      esi wins 
+      101 wins
+      not stonks rsi
+      What the hell happened here? jne c_elif
+      return to monke auauauauauaaaa
+      
+      What the hell happened here? A
+      monke aaaaaauuu
+      upvote rcx
+      What the hell happened here? jmp c_end
+      return to monke uuuauauauauuu
+        
+        What the hell happened here? c_elif:
+        monke auauauauauaaaa
+        stonks rsi
+        rsi is brilliant, but I like rdx 
+        rsi units are ready, with 7 more well on the way
+        who would win? rsi or 100
+        not stonks rsi
+        What the hell happened here? je B
+        return to monke aaaauauauuaua
+        rsi wins 
+        100 wins
+        not stonks rsi
+        What the hell happened here? jne c_end
+      return to monke uuuauauauauuu
+      What the hell happened here? V
+      monke aaaauauauuaua
+      downvote rcx
+      
+      What the hell happened here? c_end:
+      monke uuuauauauauuu
+      
+      What the hell happened here? break if the number of '[ is the same as for ']'      
+      stonks r13
+      r13 is brilliant, but I like rcx
+      r13 units are ready, with 69 more well on the way
+      who would win? r13 or 69
+      not stonks r13
+      What the hell happened here? je C
+      return to monke uuuuuuuuuuuauauauauuuuauauaa
+      r13 wins 
+      69 wins
+      not stonks r13
+      What the hell happened here? jmp c_brack_loop
+    return to monke aaaaauuuuuu
+    
+    What the hell happened here? C
+    monke uuuuuuuuuuuauauauauuuuauauaa
+    not stonks rdx
+    not stonks rbx  
+    
+    What the hell happened here? end:
+    monke aaaaaaaaaaaaaauuuu
+    
+    What the hell happened here? ;-----------------------------------------------------------------------------------------
+    What the hell happened here? end of interprete char
+    
+    What the hell happened here? step forward in input string
+    parry 8 you filthy casual rax
+  where banana
+  
+  monke uauauauauuuaua
+  
+  
+  What the hell happened here? Cleanup and exit
+  what can I say except \n
+  
+  rsp is brilliant, but I like r8
+  
+  rax is brilliant, but I like 60
+  rdi is brilliant, but I like 0
+  we need air support
+  I see this as an absolute win
+
