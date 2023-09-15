@@ -1,4 +1,7 @@
 # [WIP] brainASM
+
+>:warning: ***This repository is currently being worked on. Stuff may break and not work as advertised.***
+
 This project is an interpreter for the esoteric programming language brainfuck, written in assembly. Included is a translation to the most excellent programming language [MemeAssembly](https://github.com/kammt/MemeAssembly).
 
 If you have any questions regarding this project or ideas on improving it, feel free to contact me.
