@@ -36,13 +36,22 @@ _start:
 ; |                     | <- RSP
 ;  ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
 ; RAX stores the absolute address of the first char of the input-string.
-; RBX stores the cell offset relative to the first cell for which the address is stored in
-; R9. This offset is in QWORD scaling, meaning cell 1 has offset 0, cell 2 has offset 1,
-; cell 3 has offset 2 etc.
+; RBX stores the cell offset relative to the first cell. The first cells address is stored
+; in R9.
+; This offset is in QWORD scaling and 0-indexed, meaning cell 1 has offset 0, cell 2 has
+; offset 1, cell 3 has offset 2 etc. Each cell is 64 bit wide.
 ;-----------------------------------------------------------------------------------------
 
 
 main:
+  ; preserve callee-saved registers
+  push rbx
+  push rbp
+  push r12
+  push r13
+  push r14
+  mov rbp, rsp
+
   call init_registers ;initialize registers
        
   mov r8, rsp         ; set input address
@@ -67,7 +76,7 @@ main:
     
   mov r9, rsp         ; set data address
   sub r9, 8
-  sub rsp, 80000      ; reserve 10000 cells
+  sub rsp, 80000      ; reserve 10000 cells (80kB)
   
   ;step through input string
   mov rax, r8
@@ -83,8 +92,14 @@ main:
     jmp loop_step
 
 exit:
-  mov rsp, r8
-  
+  ;mov rsp, r8
+  mov rsp, rbp
+  pop r14
+  pop r13
+  pop r12 
+  pop rbp
+  pop rbx
+
   mov rax, 60
   mov rdi, 0
   syscall
@@ -113,6 +128,19 @@ print_char:
   pop rax
   ret
   
+error: 
+  mov rsp, rbp
+  pop r14
+  pop r13
+  pop r12 
+  pop rbp
+  pop rbx
+
+  mov rax, 60
+  mov rdi, 1
+  syscall
+  ret
+
   
 switch_char:
 ; command description from https://en.wikipedia.org/wiki/Brainfuck
@@ -120,6 +148,8 @@ case1:
   ; > Increment the data pointer
   cmp dl, 0x3E
   jne case2
+  cmp rbx, 10000  ; check if data pointer is at upper boundary
+  jge error
   inc rbx
   jmp end
 
@@ -127,6 +157,8 @@ case2:
   ; < Decrement the data pointer
   cmp dl, 0x3C
   jne case3
+  cmp rbx, 0    ; check if data pointer is at lower boundary
+  je end
   dec rbx
   jmp end
 
@@ -286,7 +318,9 @@ case8:
   
   push rbx
   push rdx  
-  mov rcx, -1
+  ; mov rcx, -1
+  mov rcx, 0
+  sub rcx, 1
   
   c_brack_loop:
     add rax, 8        ; step back
