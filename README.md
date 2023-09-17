@@ -1,5 +1,8 @@
-# Brainfuck interpreter
-This project is a interpreter for the esoteric programming language brainfuck, written in assembly.
+# [WIP] brainASM
+
+>:warning: ***This repository is currently being worked on. Stuff may break and not work as advertised.***
+
+This project is an interpreter for the esoteric programming language brainfuck, written in assembly. Included is a translation to the most excellent programming language [MemeAssembly](https://github.com/kammt/MemeAssembly).
 
 If you have any questions regarding this project or ideas on improving it, feel free to contact me.
 
@@ -17,21 +20,78 @@ Further details are explained in the code's comments.
 ## Execution
 Provide the brainfuck program to stdin, output will be sent do stdout.
 
-Compile online via [[myCompiler]](https://www.mycompiler.io/new/asm-x86_64)
+### I just wanna run this without much of a hassle
+Compile it online via [[myCompiler]](https://www.mycompiler.io/new/asm-x86_64)
+### Compiling locally
+Build your own executable locally with NASM and GNU Linker:
+- brainasm.asm: 
+```bash
+nasm -f elf64 -o asm/object_a.o asm/brainasm.asm && ld -o asm/out_a asm/object_a.o
+```
+- brainasm_stack.asm
+```bash
+nasm -f elf64 -o asm/object_b.o asm/brainasm_stack.asm && ld -o asm/out_b asm/object_b.o
+```
+- brainasm_stack.memeasm:
+```bash
+memeasm -o memeasm/out_c memeasm/brainasm_stack.memeasm
+```
 
-Compile locally with x86_64 NASM 
 
 ## Examples
-1. Hello World
+Examples can be found in `/examples/`. These can be passed to the interpreter like so: 
+```bash
+cat examples/helloworld.b | ./asm/out_a
+```
 
-`++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.`
+- Hello World
+
+```brainfuck
+++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.
+```
 
 Output: `Hello World!`
 
-2. Computing the mathematical constant e
+- The mathematical constant e
 
-`>>>>++>+>++>+>>++<+[[>[>>[>>>>]<<<<[[>>>>+<<<<-]<<<<]>>>>>>]+<]>->>--[+[+++<<<<--]++>>>>--]+[>>>>]<<<<[<<+<+<]<<[>>>>>>[[<<<<+>>>>-]>>>>]<<<<<<<<[<<<<]>>-[<<+>>-]+<<[->>>>[-[+>>>>-]-<<-[>>>>-]++>>+[-<<<<+]+>>>>]<<<<[<<<<]]>[-[<+>-]]+<[->>>>[-[+>>>>-]-<<<-[>>>>-]++>>>+[-<<<<+]+>>>>]<<<<[<<<<]]<<]>>>+[>>>>]-[+<<<<--]++[<<<<]>>>+[>-[>>[--[++>>+>>--]-<[-[-[+++<<<<-]+>>>>-]]++>+[-<<<<+]++>>+>>]<<[>[<-<<<]+<]>->>>]+>[>>>>]-[+<<<<--]++<[[>>>>]<<<<[-[+>[<->-]++<[[>-<-]++[<<<<]+>>+>>-]++<<<<-]>-[+[<+[<<<<]>]<+>]+<[->->>>[-]]+<<<<]]>[<<<<]>[-[-[+++++[>++++++++<-]>-.>>>-[<<<----.<]<[<<]>>[-]>->>+[[>>>>]+[-[->>>>+>>>>>>>>-[-[+++<<<<[-]]+>>>>-]++[<<<<]]+<<<<]>>>]+<+<<]>[-[->[--[++>>>>--]->[-[-[+++<<<<-]+>>>>-]]++<+[-<<<<+]++>>>>]<<<<[>[<<<<]+<]>->>]<]>>>>[--[++>>>>--]-<--[+++>>>>--]+>+[-<<<<+]++>>>>]<<<<<[<<<<]<]>[>+<<++<]<]>[+>[--[++>>>>--]->--[+++>>>>--]+<+[-<<<<+]++>>>>]<<<[<<<<]]>>]>]`
+```brainfuck
+>>>>++>+>++>+>>++<+[[>[>>[>>>>]<<<<[[>>>>+<<<<-]<<<<]
+>>>>>>]+<]>->>--[+[+++<<<<--]++>>>>--]+[>>>>]<<<<[<<+
+<+<]<<[>>>>>>[[<<<<+>>>>-]>>>>]<<<<<<<<[<<<<]>>-[<<+>
+>-]+<<[->>>>[-[+>>>>-]-<<-[>>>>-]++>>+[-<<<<+]+>>>>]<
+<<<[<<<<]]>[-[<+>-]]+<[->>>>[-[+>>>>-]-<<<-[>>>>-]++>
+>>+[-<<<<+]+>>>>]<<<<[<<<<]]<<]>>>+[>>>>]-[+<<<<--]++
+[<<<<]>>>+[>-[>>[--[++>>+>>--]-<[-[-[+++<<<<-]+>>>>-]
+]++>+[-<<<<+]++>>+>>]<<[>[<-<<<]+<]>->>>]+>[>>>>]-[+<
+<<<--]++<[[>>>>]<<<<[-[+>[<->-]++<[[>-<-]++[<<<<]+>>+
+>>-]++<<<<-]>-[+[<+[<<<<]>]<+>]+<[->->>>[-]]+<<<<]]>[
+<<<<]>[-[-[+++++[>++++++++<-]>-.>>>-[<<<----.<]<[<<]>
+>[-]>->>+[[>>>>]+[-[->>>>+>>>>>>>>-[-[+++<<<<[-]]+>>>
+>-]++[<<<<]]+<<<<]>>>]+<+<<]>[-[->[--[++>>>>--]->[-[-
+[+++<<<<-]+>>>>-]]++<+[-<<<<+]++>>>>]<<<<[>[<<<<]+<]>
+->>]<]>>>>[--[++>>>>--]-<--[+++>>>>--]+>+[-<<<<+]++>>
+>>]<<<<<[<<<<]<]>[>+<<++<]<]>[+>[--[++>>>>--]->--[+++
+>>>>--]+<+[-<<<<+]++>>>>]<<<[<<<<]]>>]>]
+```
 
-Note: Has to be manually terminated. Code stolen from Daniel B. Cristofani on [[brainfuck.org]](http://brainfuck.org/)
+Note: Has to be manually terminated. [[brainfuck.org]](http://brainfuck.org/)
 
 Output: `2.71828182845904523536028747135266249775...`
+- Sierpiński triangle
+```brainfuck
+++++++++[>+>++++<<-]>++>>+<[-[>>+<<-]+>>]>+[-<<<[->[+
+[-]+>++>>>-<<]<[<]>>++++++[<<+++++>>-]+<<++.[-]<<]>.>
++[>>]>+]
+```
+Output: 
+```
+                               *
+                              * *
+                             *   *
+                            * * * *
+                           *       *
+                          * *     * *
+                         *   *   *   *
+                        * * * * * * * *
+...
+```
