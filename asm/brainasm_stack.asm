@@ -72,7 +72,7 @@ main:
        
   mov r8, rsp         ; set input start address
   sub r8, 8
-  mov r9, r9          
+  mov r9, r8          
   sub r9, INPUT_SIZE  ; set maximum extent for input
   
   ;read code input from stdin
@@ -102,12 +102,13 @@ main:
   ;step through input string
   mov rax, r8
   loop_step: 
+    cmp rax, r9         ; check for end of string (beginning of data)
+    je exit
+
     mov r10, rsp        ; save current rsp for later
     mov rsp, rax
     pop rdx             ; move current char into dl
     mov rsp, r10        ; quickly put rsp back to where it belongs
-    cmp rax, r9         ; check for end of string (beginning of data)
-    je exit
     call switch_char    ; interprete character
     sub rax, 8
     jmp loop_step
@@ -282,10 +283,10 @@ case7:
   
   o_brack_loop:
     sub rax, 8        ; step forward
-    sub rax, r9       ; transform to relative
-    cmp rax, INPUT_SIZE
+    sub r9, rax       ; transform to relative
+    cmp r9, INPUT_SIZE
     jg error          ; exit on missing matching closing bracket
-    add rax, r9       ; transform back to absolute
+    add r9, rax       ; transform back to absolute
 
 
     mov r10, rsp
@@ -340,10 +341,10 @@ case8:
   
   c_brack_loop:
     add rax, 8        ; step back
-    sub rax, r9      ; transform to relative
+    sub r9, rax       ; transform to relative
     cmp rax, 0
     je error          ; exit on missing matching opening bracket
-    add rax, r9       ; transform back to absolute
+    add r9, rax       ; transform back to absolute
     
     mov r10, rsp
     mov rsp, rax
