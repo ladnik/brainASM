@@ -3,9 +3,17 @@
 ;
 ; In this implementation each cell will have eight bytes (64 bit) assigned to it.
 ; The code input and cells will be stored on the stack, as to avoid indirect addressing and
-; memory. Therefore this code is an abomination, please don't look to closely at it.
+; memory, as the MemeASM standard doesn't provide any commands for direct memory access.
+; This problem is circumvented by pushing/popping from the stack. This however means that
+; the Stackpointer has to be moved which results in everything below the new location of
+; rsp to be abandoned to the OS wilderness. It is a gamble and we can only hope that this
+; memory won't be overwritten until we're ready to set rsp to its correct location again.
+; This code is guaranteed to induce horrible pain in anyone who has written atleast two
+; lines of assembly in their life, but I don't see any other option.
 ;-----------------------------------------------------------------------------------------
 
+INPUT_SIZE: equ 10000     ; maximum size the input buffer should have
+CELL_B_CNT: equ 80000     ; number of cells times 8
 
 section .text
 global _start
@@ -52,14 +60,26 @@ main:
   push r14
   mov rbp, rsp
 
-  call init_registers ;initialize registers
+  ;initialize registers
+  xor rax, rax
+  xor rbx, rbx
+  xor rcx, rcx
+  xor rdx, rdx
+  xor r8, r8
+  xor r9, r9
+  xor r10, r10
+  xor r11, r11
        
-  mov r8, rsp         ; set input address
+  mov r8, rsp         ; set input start address
   sub r8, 8
+  mov r9, r9          
+  sub r9, INPUT_SIZE  ; set maximum extent for input
   
   ;read code input from stdin
   loop:
-    sub rsp, 8        ; allocate space on stack
+    sub rsp, 8        ; allocate space for one char on stack
+    cmp rsp, r9 
+    jle exit          ; exit on input size too large
 
     xor rax, rax      ; sys_read
     xor rdi, rdi      ; stdin
@@ -68,15 +88,16 @@ main:
     syscall
     
     cmp rax, 0        ; check rax for end of input
+    ;cmp rax, 0x04     ; check rax for EOT
     jne loop
     
-  pop rdx
+  ;pop rdx
   xor rax, rax
   ; end of reading - now the input string should be saved on the stack
     
-  mov r9, rsp         ; set data address
+  mov r9, rsp         ; set data start address
   sub r9, 8
-  sub rsp, 80000      ; reserve 10000 cells (80kB)
+  sub rsp, CELL_B_CNT ; reserve 10000 8-byte-cells (80kB)
   
   ;step through input string
   mov rax, r8
@@ -84,7 +105,7 @@ main:
     mov r10, rsp        ; save current rsp for later
     mov rsp, rax
     pop rdx             ; move current char into dl
-    mov rsp, r10
+    mov rsp, r10        ; quickly put rsp back to where it belongs
     cmp rax, r9         ; check for end of string (beginning of data)
     je exit
     call switch_char    ; interprete character
@@ -104,16 +125,6 @@ exit:
   mov rdi, 0
   syscall
   
-init_registers:
-  xor rax, rax
-  xor rbx, rbx
-  xor rcx, rcx
-  xor rdx, rdx
-  xor r8, r8
-  xor r9, r9
-  xor r10, r10
-  xor r11, r11
-  ret
   
 print_char:
  ; prints char in dl
@@ -137,7 +148,7 @@ error:
   pop rbx
 
   mov rax, 60
-  mov rdi, 1
+  mov rdi, 0
   syscall
   ret
 
@@ -146,25 +157,25 @@ switch_char:
 ; command description from https://en.wikipedia.org/wiki/Brainfuck
 case1:                
   ; > Increment the data pointer
-  cmp dl, 0x3E
+  cmp dl, '>'
   jne case2
-  cmp rbx, 10000  ; check if data pointer is at upper boundary
-  jge error
+  cmp rbx, CELL_B_CNT
+  jge error   ; exit on out of bounds (upper)
   inc rbx
   jmp end
 
 case2:                
   ; < Decrement the data pointer
-  cmp dl, 0x3C
+  cmp dl, '<'
   jne case3
-  cmp rbx, 0    ; check if data pointer is at lower boundary
-  je end
+  cmp rbx, 0
+  je error  ; exit on out of bounds (lower)
   dec rbx
   jmp end
 
 case3:                
   ; + Increment the byte at the data pointer
-  cmp dl, 0x2B
+  cmp dl, '+'
   jne case4
   
   mov r10, rsp
@@ -181,7 +192,7 @@ case3:
   
 case4:                
   ; - Decrement the byte at the data pointer
-  cmp dl, 0x2D
+  cmp dl, '-'
   jne case5
   
   mov r10, rsp
@@ -199,7 +210,7 @@ case4:
   
 case5:                
   ; . Output the byte at the data pointer
-  cmp dl, 0x2E
+  cmp dl, '.'
   jne case6
   
   push rax
@@ -223,7 +234,7 @@ case5:
   
 case6:                
   ; , Accept one byte of input, storing its value in the byte at the data pointer
-  cmp dl, 0x2C
+  cmp dl, ','
   jne case7
   push rax
   push rbx
@@ -248,7 +259,7 @@ case7:
   ; [ If the byte at the data pointer is zero, then instead of moving the instruction
   ; pointer forward to the next command, jump it forward to the command after the
   ; matching ] command
-  cmp dl, 0x5B
+  cmp dl, '['
   jne case8
   
   
@@ -271,19 +282,24 @@ case7:
   
   o_brack_loop:
     sub rax, 8        ; step forward
-    
+    sub rax, r9       ; transform to relative
+    cmp rax, INPUT_SIZE
+    jg error          ; exit on missing matching closing bracket
+    add rax, r9       ; transform back to absolute
+
+
     mov r10, rsp
     mov rsp, rax
     pop rdx           ; get input char
     mov rsp, r10
   
     o_if:
-      cmp dl, 0x5B
+      cmp dl, '['
       jne o_elif
       inc rcx
       jmp o_end
     o_elif:
-      cmp dl, 0x5D
+      cmp dl, ']'
       jne o_end
       dec rcx
     o_end:
@@ -300,7 +316,7 @@ case8:
   ; ] If the byte at the data pointer is nonzero, then instead of moving the instruction
   ; pointer forward to the next command, jump it back to the command after the 
   ; matching [ command
-  cmp dl, 0x5D
+  cmp dl, ']'
   jne end
   
   mov rcx, r9
@@ -324,6 +340,10 @@ case8:
   
   c_brack_loop:
     add rax, 8        ; step back
+    sub rax, r9      ; transform to relative
+    cmp rax, 0
+    je error          ; exit on missing matching opening bracket
+    add rax, r9       ; transform back to absolute
     
     mov r10, rsp
     mov rsp, rax
@@ -331,12 +351,12 @@ case8:
     mov rsp, r10
   
     c_if:
-      cmp dl, 0x5B
+      cmp dl, '['
       jne c_elif
       inc rcx
       jmp c_end
     c_elif:
-      cmp dl, 0x5D
+      cmp dl, ']'
       jne c_end
       dec rcx
     c_end:

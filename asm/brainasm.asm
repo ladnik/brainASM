@@ -44,6 +44,11 @@ exit:
   mov rax, 60
   mov rdi, 0
   syscall
+
+error:
+  mov rax, 60
+  mov rdi, 0
+  syscall
     
 read_input:
   ;read from stdin (rax = 0, rdi = 0) to addres input with size input_size
@@ -60,40 +65,45 @@ init_pointers:
   xor rcx, rcx
   xor rdx, rdx
   ret
+
   
 switch_char:
   ;command description from https://en.wikipedia.org/wiki/Brainfuck
   case1:                
     ; > Increment the data pointer
-    cmp dl, 0x3E
+    cmp dl, '>'
     jne case2
+    cmp rbx, CELL_COUNT
+    jge error   ; exit on out of bounds (upper)
     inc rbx
     jmp end
   
   case2:                
     ; < Decrement the data pointer
-    cmp dl, 0x3C
+    cmp dl, '<'
     jne case3
+    cmp rbx, 0
+    je error    ; exit on out of bounds (lower)
     dec rbx
     jmp end
   
   case3:                
     ; + Increment the byte at the data pointer
-    cmp dl, 0x2B
+    cmp dl, '+'
     jne case4
     inc byte [cells + rbx]
     jmp end
     
   case4:                
     ; - Decrement the byte at the data pointer
-    cmp dl, 0x2D
+    cmp dl, '-'
     jne case5
     dec byte [cells + rbx]
     jmp end
     
   case5:                
     ; . Output the byte at the data pointer
-    cmp dl, 0x2E
+    cmp dl, '.'
     jne case6
     
     push rax
@@ -107,7 +117,7 @@ switch_char:
     
   case6:                
     ; , Accept one byte of input, storing its value in the byte at the data pointer
-    cmp dl, 0x2C
+    cmp dl, ','
     jne case7
 
     push rax
@@ -121,9 +131,9 @@ switch_char:
     
   case7:                
     ; [ If the byte at the data pointer is zero, then instead of moving the instruction
-    ; pointer forward to the next command, jump it forward to the command after the
+    ; pointer forward to the next command, jump forward to the command after the
     ; matching ] command
-    cmp dl, 0x5B
+    cmp dl, '['
     jne case8
     
     mov cl, [cells + rbx]
@@ -133,14 +143,16 @@ switch_char:
     mov cl, 1
     o_brack_loop:
       inc rax
+      cmp rax, INPUT_SIZE
+      jg error  ; exit on missing matching closing bracket
       mov dl, [input + rax]
       o_if:
-        cmp dl, 0x5B
+        cmp dl, '['
         jne o_elif
         inc cl
         jmp o_end
       o_elif:
-        cmp dl, 0x5D
+        cmp dl, ']'
         jne o_end
         dec cl
       o_end:
@@ -151,9 +163,9 @@ switch_char:
     
   case8:                
     ; ] If the byte at the data pointer is nonzero, then instead of moving the instruction
-    ; pointer forward to the next command, jump it back to the command after the 
+    ; pointer forward to the next command, jump back to the command after the 
     ; matching [ command
-    cmp dl, 0x5D
+    cmp dl, ']'
     jne end
     
     mov cl, [cells + rbx]
@@ -163,14 +175,16 @@ switch_char:
     mov cl, -1
     c_brack_loop:
       dec rax
+      cmp rax, 0
+      je error  ; exit on missing matching opening bracket
       mov dl, [input + rax]
       c_if:
-        cmp dl, 0x5B
+        cmp dl, '['
         jne c_elif
         inc cl
         jmp c_end
       c_elif:
-        cmp dl, 0x5D
+        cmp dl, ']'
         jne c_end
         dec cl
       c_end:
