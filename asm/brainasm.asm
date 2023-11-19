@@ -51,7 +51,7 @@ error:
   syscall
     
 read_input:
-  ;read from stdin (rax = 0, rdi = 0) to addres input with size input_size
+  ;read from stdin (rax = 0, rdi = 0) to address input with size input_size
   xor rax, rax 
   xor rdi, rdi
   mov rsi, input

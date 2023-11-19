@@ -69,28 +69,34 @@ main:
   xor r9, r9
   xor r10, r10
   xor r11, r11
-       
-  mov r8, rsp         ; set input start address
-  sub r8, 8
-  mov r9, r8          
-  sub r9, INPUT_SIZE  ; set maximum extent for input
-  
-  ;read code input from stdin
-  loop:
-    sub rsp, 8        ; allocate space for one char on stack
-    cmp rsp, r9 
-    jle exit          ; exit on input size too large
 
-    xor rax, rax      ; sys_read
-    xor rdi, rdi      ; stdin
-    mov rsi, rsp      ; save onto stack
-    mov rdx, 1        ; read 1 byte
-    syscall
-    
-    cmp rax, 0        ; check rax for end of input
-    ;cmp rax, 0x04     ; check rax for EOT
-    jne loop
-    
+  sub rsp, 8  
+  mov r8, rsp         ; set input start address        
+  sub rsp, INPUT_SIZE  ; set maximum extent for input
+  
+  ;;read code input from stdin
+  ;loop:
+  ;  sub rsp, 1        ; allocate space for one char on stack
+  ;  cmp rsp, r9 
+  ;  jle exit          ; exit on input size too large
+;
+  ;  xor rax, rax      ; sys_read
+  ;  xor rdi, rdi      ; stdin
+  ;  mov rsi, rsp      ; save onto stack
+  ;  mov rdx, 1        ; read 1 byte
+  ;  syscall
+  ;  
+  ;  cmp rax, 0        ; check rax for end of input
+  ;  ;cmp rax, 0x04     ; check rax for EOT
+  ;  jne loop
+
+  ;read from stdin (rax = 0, rdi = 0) to stack with size input_size
+  xor rax, rax 
+  xor rdi, rdi
+  mov rsi, r8
+  mov rdx, INPUT_SIZE
+  syscall
+
   ;pop rdx
   xor rax, rax
   ; end of reading - now the input string should be saved on the stack
@@ -107,10 +113,10 @@ main:
 
     mov r10, rsp        ; save current rsp for later
     mov rsp, rax
-    pop rdx             ; move current char into dl
+    pop dl              ; move current char into dl
     mov rsp, r10        ; quickly put rsp back to where it belongs
     call switch_char    ; interprete character
-    sub rax, 8
+    sub rax, 1
     jmp loop_step
 
 exit:
@@ -282,7 +288,7 @@ case7:
   mov rcx, 1
   
   o_brack_loop:
-    sub rax, 8        ; step forward
+    sub rax, 1        ; step forward
     sub r9, rax       ; transform to relative
     cmp r9, INPUT_SIZE
     jg error          ; exit on missing matching closing bracket
@@ -340,7 +346,7 @@ case8:
   sub rcx, 1
   
   c_brack_loop:
-    add rax, 8        ; step back
+    add rax, 1        ; step back
     sub r9, rax       ; transform to relative
     cmp rax, 0
     je error          ; exit on missing matching opening bracket
